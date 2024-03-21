@@ -1,6 +1,7 @@
 package gee
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -11,10 +12,10 @@ type Context struct {
 	// original objects
 	Writer http.ResponseWriter
 	Req    *http.Request
-	// request info
+	// request info 请求
 	Path   string
 	Method string
-	// response info
+	// response info 回复
 	StatusCode int
 }
 
@@ -51,10 +52,14 @@ func (c *Context) String(code int, format string, values ...interface{}) {
 	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
 }
 
-func (c *Context) JSON(code int, format string, values ...interface{}) {
+func (c *Context) JSON(code int, obj interface{}) {
 	c.SetHeader("Content-Type", "application/json")
 	c.Status(code)
-	c.Writer.Write([]byte(fmt.Sprintf(format, values...)))
+	encoder := json.NewEncoder(c.Writer)
+	if err := encoder.Encode(obj); err != nil {
+		http.Error(c.Writer, err.Error(), 500)
+	}
+
 }
 
 func (c *Context) Data(code int, data []byte) {

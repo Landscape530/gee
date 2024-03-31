@@ -10,7 +10,7 @@ func main() {
 	r.GET("/", func(c *gee.Context) {
 		c.HTML(http.StatusOK, "<h1>HELLO Gee HL!</h1>")
 	})
-	r.GET("/branch", func(c *gee.Context) {
+	r.GET("/branch", func(c *gee.Context) { // 静态路由，只能匹配name
 		c.String(http.StatusOK, "branch %s, you are at %s\n", c.Query("name"), c.Path)
 	})
 
